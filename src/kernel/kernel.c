@@ -86,14 +86,24 @@ void terminal_putentryat(char c, uint8_t color, size_t x, size_t y)
 	terminal_buffer[index] = vga_entry(c, color);
 }
 
+void terminal_nline()
+{
+	terminal_column = 0;
+	if (++terminal_row == VGA_HEIGHT)
+		terminal_row = 0;
+}
+
 void terminal_putchar(char c)
 {
+	if (c == '\n') {
+		terminal_nline();
+		return;
+	}
+
 	terminal_putentryat(c, terminal_color, terminal_column, terminal_row);
 
 	if (++terminal_column == VGA_WIDTH) {
-		terminal_column = 0;
-		if (++terminal_row == VGA_HEIGHT)
-			terminal_row = 0;
+		terminal_nline();
 	}
 }
 
@@ -103,15 +113,27 @@ void terminal_write(const char* data, size_t size)
 		terminal_putchar(data[i]);
 }
 
-void terminal_puts(const char* data)
+void terminal_writes(const char* data)
 {
 	terminal_write(data, strlen(data));
+}
+
+void terminal_puts(const char* data)
+{
+	terminal_writes(data);
+	terminal_nline();
 }
 
 void kernel_main()
 {
 	terminal_init();
-
-	terminal_puts("Hello, kernel World!\n");
+	
+	terminal_nline();
+	terminal_puts("Hello, kernel World!");
+	terminal_setcolor(vga_entry_color(VGA_COLOR_RED, VGA_COLOR_BLACK));
+	terminal_puts("This is SmplKernel");
+	terminal_puts("PS: It's very simple");
+	terminal_setcolor(vga_entry_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK));
+	terminal_nline();
 }
 
