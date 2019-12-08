@@ -38,3 +38,4 @@ bochs: $(CONFIGS)/bochs.config iso
 clean:
 	rm -fr $(BIN)
 	rm -fr isodir
+	rm -fr log
