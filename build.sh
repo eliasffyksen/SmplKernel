@@ -4,5 +4,6 @@ set -e
 . ./headers.sh
 
 for PROJECT in $PROJECTS; do
+	echo "BUILDING: $PROJECT"
 	(cd $PROJECT && DESTDIR="$SYSROOT" $MAKE install)
 done

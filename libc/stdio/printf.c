@@ -20,7 +20,7 @@ int printf(const char* restrict format, ...)
 
 	int written = 0;
 
-	while (*fomat != '\0') {
+	while (*format != '\0') {
 		size_t maxrem = INT_MAX - written;
 
 		if (format[0] != '%' || format[1] == '%') {	
@@ -92,6 +92,6 @@ int printf(const char* restrict format, ...)
 		}
 	}
 
-	va_end(prameters);
+	va_end(parameters);
 	return written;
 }

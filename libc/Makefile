@@ -1,4 +1,4 @@
-DEFAULT_HOST!=../default-host.s
+DEFAULT_HOST!=../default-host.sh
 HOST?=DEFAULT_HOST
 HOSTARCH!=../target-triplet-to-arch.sh $(HOST)
 
@@ -84,7 +84,7 @@ install-headers:
 	mkdir -p $(DESTDIR)$(INCLUDEDIR)
 	cp -R --preserve=timestamps include/. $(DESTDIR)$(INCLUDEDIR)/.
 
-install-libs:
+install-libs: $(BINARIES)
 	mkdir -p $(DESTDIR)$(LIBDIR)
 	cp $(BINARIES) $(DESTDIR)$(LIBDIR)
 
