@@ -6,12 +6,12 @@
 void kernel_main() 
 {
 	
-	terminal_initialize();
+	terminal_init();
 	puts("Terminal initialized");
 
 	puts("\nInitializing arch...");
-	arch_initialize();
-	puts("Arch initialized ");
+	arch_init();
+	puts("Arch initialized");
 
 	puts("\nKernel initialized");
 }

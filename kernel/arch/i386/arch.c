@@ -4,7 +4,7 @@
 
 #include "gdt/gdt.h"
 
-void arch_initialize()
+void arch_init()
 {
-	puts("\tInitializing gdt...");
+	puts("Initializing gdt...");
 }

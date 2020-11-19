@@ -18,7 +18,7 @@ static uint16_t* terminal_buffer;
 
 static size_t terminal_tabsize;
 
-void terminal_initialize()
+void terminal_init()
 {
 	terminal_row = 0;
 	terminal_column = 0;
