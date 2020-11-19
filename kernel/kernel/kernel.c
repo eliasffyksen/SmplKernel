@@ -10,7 +10,6 @@ void kernel_main()
 
 	puts("\nInitializing arch...");
 	arch_init();
-	puts("Arch initialized");
 
 	puts("\nKernel initialized");
 }

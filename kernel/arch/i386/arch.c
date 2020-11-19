@@ -8,5 +8,4 @@ void arch_init()
 {
 	puts("Initializing GDT...");
 	gdt_init();
-	puts("Initialized GDT");
 }
