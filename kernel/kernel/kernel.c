@@ -5,7 +5,6 @@
 
 void kernel_main() 
 {
-	
 	terminal_init();
 	puts("Terminal initialized");
 
