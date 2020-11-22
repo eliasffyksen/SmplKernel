@@ -1,17 +1,19 @@
-.intel_syntax noprefix
+.section .text
 
-.globl gdt_load
+.global gdt_load
 .type gdt_load, @function
-gdt_load:
-	MOV EAX, [esp + 4]
-	LGDT [EAX]
-    JMP 0x08:selector_update
 
+gdt_load:
+    movl 4(%esp), %eax
+    lgdt (%eax)
+
+    ljmp $0x08, $selector_update
 selector_update:
-    MOV AX, 0x10
-    MOV DS, AX
-    MOV ES, AX
-    MOV FS, AX
-    MOV GS, AX
-    MOV SS, AX
-    RET
+    movw $0x10, %ax
+    movw %ax, %ds
+    movw %ax, %es
+    movw %ax, %fs
+    movw %ax, %gs
+    movw %ax, %ss
+
+    ret

@@ -10,7 +10,6 @@ void gdt_encode(GDT_encoded *gdt_target, struct GDT source)
 
     // Check the limit to make sure that it can be encoded
     if ((source.limit > 65536) && ((source.limit & 0xFFF) != 0xFFF)) {
-        puts("ERR: Invalid gdt limit");
         return;
     }
     if (source.limit > 65536) {
@@ -39,7 +38,7 @@ void gdt_encode(GDT_encoded *gdt_target, struct GDT source)
 void gdt_init(void)
 {
     gdt_ptr.limit = sizeof(gdt_table) - 1;
-    gdt_ptr.base = &gdt_table;
+    gdt_ptr.base = (GDT_encoded *) &gdt_table;
 
     gdt_encode(&gdt_table[0], (struct GDT) {.base = 0, .limit = 0, .type=0});
     gdt_encode(&gdt_table[1], (struct GDT) {.base = 0, .limit = 0xFFFFFF, .type=0x9A});
