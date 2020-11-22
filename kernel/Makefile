@@ -1,8 +1,7 @@
 
 ARCHDIR=arch/$(ARCH)
 
-SRCS=$(shell find kernel \( -name "*.c" -o -name "*.S" \))
-SRCS+=$(shell find $(ARCHDIR) \( -name "*.c" -o -name "*.S" \))
+SRCS=$(shell find kernel $(ARCHDIR) \( -name "*.c" -o -name "*.S" \))
 
 OBJS=$(SRCS:.c=.o)
 OBJS:=$(OBJS:.S=.o)
