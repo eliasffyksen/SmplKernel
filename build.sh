@@ -1,9 +1,10 @@
 #!/bin/sh
 
 set -e
-. ./headers.sh
+. ./config.sh
+# . ./headers.sh
 
 for PROJECT in $PROJECTS; do
 	echo "BUILDING: $PROJECT"
-	(cd $PROJECT && DESTDIR="$SYSROOT" $MAKE install)
+	(cd $PROJECT && make install)
 done

@@ -1,93 +1,37 @@
-DEFAULT_HOST!=../default-host.sh
-HOST?=DEFAULT_HOST
-HOSTARCH!=../target-triplet-to-arch.sh $(HOST)
 
-CFLAGS?=-O2 -g
-CPPFLAGS?=
-LDFLAGS?=
-LIBS?=
+SRCS=$(wildcard libc/**/*.c) $(wildcard libc/**/*.S)
+OBJS=$(SRCS:.c=.o)
+OBJS:=$(OBJS:.S=.o)
 
-DESTDIR?=
-PREFIX?=/usr/local
-EXEC_PREFIX?=$(PREFIX)
-INCLUDEDIR?=$(PREFIX)/include
-LIBDIR?=$(EXEC_PREFIX)/lib
+LIBK_OBJS=$(filter-out %.libc.o,$(OBJS))
+LIBC_OBJS=$(filter-out %.libk.o,$(OBJS))
 
-CFLAGS:=$(CFLAGS) -ffreestanding -Wall -Wextra
-CPPFLAGS:=$(CPPFLAGS) -D__is_libc -Iinclude
-LIBK_FLAGS:=$(CFLAGS)
-LIBK_CPPFLAGS:=$(CPPFLAGS) -D__is_libk
+CFLAGS+=-I$(INCLUDEDIR) -nostdlib -ffreestanding
 
-ARCHDIR=arch/$(HOSTARCH)
-
-include $(ARCHDIR)/make.config
-
-CFLAGS:=$(CFLAGS) $(ARCH_CFLAGS)
-CPPFLAGS:=$(CPPFLAGS) $(ARCH_CPPFLAGS)
-LIBK_CFLAGS:=$(LIBK_CFLAGS) $(KERNEL_ARCH_CFLAGS)
-LIBK_CPPFLAGS:=$(LIBK_CPPFLAGS) $(KERNEL_ARCH_CPPFLAGS)
-
-FREEOBJS=\
-$(ARCH_FREEOBJS) \
-stdio/printf.o \
-stdio/putchar.o \
-stdio/puts.o \
-stdlib/abort.o \
-string/memcmp.o \
-string/memcpy.o \
-string/memmove.o \
-string/memset.o \
-string/strlen.o \
-
-HOSTEDOBJS=\
-$(ARCH_HOSTEDOBJS) \
-
-OBJS=\
-$(FREEOBJS) \
-$(HOSTEDOBJS) \
-
-LIBK_OBJS=$(FREEOBJS:.o=.libk.o)
-
-BINARIES=libk.a
-
-.PHONY: all clean install install-headers install-libs
-.SUFFIXES: .o .libk.o .c .S
-
-all: $(BINARIES)
-
-libc.a: $(OBJS)
-	$(AR) rcs $@ $(OBJS)
-
-libk.a: $(LIBK_OBJS)
-	$(AR) rcs $@ $(LIBK_OBJS)
-
-.c.o:
-	$(CC) -MD -c $< -o $@ -std=gnu11 $(CFLAGS) $(CPPFLAGS)
-
-.c.S:
-	$(CC) -MD -c $< -o $@ $(CFLAGS) $(CPPFLAGS)
-
-.c.libk.o:
-	$(CC) -MD -c $< -o $@ -std=gnu11 $(LIBK_CLFAGS) $(LIBK_CPPFLAGS)
-
-.S.libk.o:
-	$(CC) -MD -c $< -o $@ $(LIBK_CFLAGS) $(LIBK_CPPFLAGS)
+install: install-headers install-libk.a install-libc.a 
 
 clean:
-	rm -f $(BINARIES) *.a
-	rm -f $(OBJS) $(LIBK_OBJS) *.o */*.o */*/*.o
-	rm -f $(OBJS:.o=.d) $(LIBK_OBJS:.o=.d) *.d */*.d */*/*.d
-
-install: install-headers install-libs
+	rm -f libc.a libk.a
+	rm -f $(OBJS)
 
 install-headers:
-	mkdir -p $(DESTDIR)$(INCLUDEDIR)
-	cp -R --preserve=timestamps include/. $(DESTDIR)$(INCLUDEDIR)/.
+	mkdir -p $(INCLUDEDIR)
+	cp -R --preserve=timestamps include/. $(INCLUDEDIR)/.
 
-install-libs: $(BINARIES)
-	mkdir -p $(DESTDIR)$(LIBDIR)
-	cp $(BINARIES) $(DESTDIR)$(LIBDIR)
+libk.a: $(LIBK_OBJS)
+	$(AR) rcs $@ $^
 
--include $(OBJS:.o=.d)
--include $(LIBK_OBJS:.o=.d)
+libc.a: $(LIBC_OBJS)
+	$(AR) rcs $@ $^
+
+install-lib%: lib%
+	mkdir -p $(LIBDIR)
+	cp $< $(LIBDIR)
+
+.c.o:
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+.S.o:
+	$(CC) $(CFLAGS) -c -o $@ $<
+
 

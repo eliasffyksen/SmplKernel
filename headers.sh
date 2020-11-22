@@ -6,5 +6,5 @@ mkdir -p "$SYSROOT"
 
 for PROJECT in $SYSTEM_HEADER_PROJECTS; do
 	echo "INSTALLING HEADERS: $PROJECT"
-	(cd $PROJECT && DESTDIR="$SYSROOT" $MAKE install-headers)
+	(cd $PROJECT && make install-headers)
 done

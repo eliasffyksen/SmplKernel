@@ -3,9 +3,6 @@ set -e
 . ./config.sh
 
 for PROJECT in $PROJECTS; do
-	(cd $PROJECT && $MAKE clean)
+	(cd $PROJECT && make clean)
 done
 
-rm -rf sysroot
-rm -rf isodir
-rm -rf SmplOS.iso

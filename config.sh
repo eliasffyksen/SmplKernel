@@ -1,25 +1,18 @@
-SYSTEM_HEADER_PROJECTS="libc kernel"
 PROJECTS="libc kernel"
+SYSTEM_HEADER_PROJECTS="libc kernel"
 
-export MAKE=${MAKE:-make}
-export HOST=${HOST:-$(./default-host.sh)}
- 
-export AR=${HOST}-ar
-export AS=${HOST}-as
-export CC=${HOST}-gcc
- 
-export PREFIX=/usr
-export EXEC_PREFIX=$PREFIX
-export BOOTDIR=/boot
-export LIBDIR=$EXEC_PREFIX/lib
+export TARGET=i686-elf
+export ARCH=i386
+export CC="clang --target=i686-pc-elf -march=i686 -fno-builtin"
+export AR="llvm-ar"
+
+export BUILDDIR=$PWD/build
+
+export SYSROOT=$PWD/sysroot
+export PREFIX=$SYSROOT/usr
+export BOOTDIR=$SYSROOT/boot
+export LIBDIR=$PREFIX/lib
 export INCLUDEDIR=$PREFIX/include
+
+export CFLAGS="-O2 -Wall -Wextra"
  
-export CFLAGS='-O2 -g'
-export CPPFLAGS=''
- 
-export SYSROOT="$(pwd)/sysroot"
-export CC="$CC --sysroot=$SYSROOT"
- 
-if echo "$HOST" | grep -Eq -- '-elf($|-)'; then
-  export CC="$CC -isystem=$INCLUDEDIR"
-fi
