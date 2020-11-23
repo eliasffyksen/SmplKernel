@@ -15,9 +15,12 @@ export ISO?=$(BUILDDIR)/SmplOS.iso
 
 PROJECTS=libc kernel iso
 
-.PHONY: build includes-% build-%
+.PHONY: build build-% includes-% clean clean-% qemu
 
 build: includes-kernel $(PROJECTS:%=build-%)
+build-%: PROJECT = $(@:build-%=%)
+build-%:
+	$(MAKE) -C $(PROJECT)
 
 qemu: build
 	qemu-system-$(ARCH) -cdrom $(ISO)
@@ -26,6 +29,9 @@ includes-%: PROJECT = $(@:includes-%=%)
 includes-%: 
 	$(MAKE) -C $(PROJECT) includes
 
-build-%: PROJECT = $(@:build-%=%)
-build-%:
-	$(MAKE) -C $(PROJECT)
+clean: $(PROJECTS:%=clean-%)
+	rm -fr $(INCLUDEDIR)/*
+clean-%: PROJECT = $(@:clean-%=%)
+clean-%: 
+	$(MAKE) -C $(PROJECT) clean
+

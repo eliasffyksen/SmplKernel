@@ -1,7 +1,9 @@
 
-ARCHDIR=arch/$(ARCH)
+ARCHDIR=kernel/arch/$(ARCH)
 
-SRCS=$(shell find kernel $(ARCHDIR) \( -name "*.c" -o -name "*.S" \))
+ARCH_SRCS=$(shell find $(ARCHDIR) -name "*.c" -o -name "*.S")
+SRCS=$(shell find kernel -path kernel/arch -prune -false -o -name "*.c" -o -name "*.S" )
+SRCS+=$(ARCH_SRCS)
 
 OBJS=$(SRCS:.c=.o)
 OBJS:=$(OBJS:.S=.o)
@@ -13,9 +15,13 @@ HEADERS:=$(HEADERS:include/%=%)
 CFLAGS+=-I$(INCLUDEDIR) -ffreestanding -nostdlib
 LIBS=-L$(LIBDIR) -lk
 
-.PHONY: build
+.PHONY: build includes
 
 build: $(KERNEL)
+
+clean:
+	rm -f $(KERNEL)
+	rm -fr $(BUILDDIR)/kernel
 
 $(KERNEL): $(OBJS) $(ARCHDIR)/linker.ld $(LIBDIR)/libk.a
 	$(CC) $(CFLAGS) -T $(ARCHDIR)/linker.ld -o $@ $(OBJS) $(LIBS)

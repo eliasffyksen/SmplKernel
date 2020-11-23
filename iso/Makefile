@@ -14,15 +14,19 @@ LIBS=$(shell \
 )
 LIBS:=$(LIBS:$(LIBDIR)/%=$(ISODIR)/lib/%)
 
-.PHONY: build
-
 FILES=\
 	$(LIBS) \
 	$(HEADERS) \
-	$(ISODIR)/boot/grub.cfg \
+	$(ISODIR)/boot/grub/grub.cfg \
 	$(ISODIR)/boot/SmplOS.kernel \
 
+.PHONY: build clean
+
 build: $(FILES) $(ISO)
+
+clean:
+	rm -fr $(ISODIR)
+	rm -f $(ISO)
 
 $(ISO): $(ISODIR)
 	grub-mkrescue -o $@ $<
@@ -37,7 +41,7 @@ $(ISODIR)/include/%: $(INCLUDEDIR)/%
 	cp --preserve=timestamps  $< $@
 	touch $(ISODIR)
 
-$(ISODIR)/boot/grub.cfg: grub.cfg
+$(ISODIR)/boot/grub/grub.cfg: grub.cfg
 	mkdir -p $(shell dirname $@)
 	cp --preserve=timestamps $< $@
 	touch $(ISODIR)

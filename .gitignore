@@ -1,5 +1,2 @@
-*.iso
-**/*.o
-**/*.a
 build
 .vscode

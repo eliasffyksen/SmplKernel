@@ -13,9 +13,14 @@ LIBC_OBJS=$(filter-out %.libk.o,$(OBJS))
 
 CFLAGS+=-I$(INCLUDEDIR) -nostdlib -ffreestanding
 
-.PHONE: build includes build-libc build-libk
+.PHONE: build includes build-libc build-libk clean
 
 build: includes build-libc build-libk
+
+clean:
+	rm -f $(LIBDIR)/libk.a
+	rm -f $(LIBDIR)/libc.a
+	rm -fr $(BUILDDIR)/libc
 
 includes: $(HEADERS:%=$(INCLUDEDIR)/%)
 $(INCLUDEDIR)/%.h: include/%.h
