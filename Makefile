@@ -1,59 +1,31 @@
-export TARGET=i686-elf
-export ARCH=i386
+
+export SRCDIR?=$(CURDIR)
+export BUILDDIR?=$(SRCDIR)/build
+export TARGET?=i686-elf
+export ARCH?=i386
+
 export CC=clang --target=i686-pc-elf -march=i686 -fno-builtin
-export AR=llvm-ar
-export CC=i686-elf-gcc
-export AR=i686-elf-ar
-
-export SYSROOT=$(CURDIR)/sysroot
-export PREFIX=$(SYSROOT)/usr
-export BOOTDIR=$(SYSROOT)/boot
-export LIBDIR=$(PREFIX)/lib
-export INCLUDEDIR=$(PREFIX)/include
-
 export CFLAGS=-O2 -Wall -Wextra
+export AR=llvm-ar
 
-PROJECTS=libc kernel
+export LIBDIR?=$(BUILDDIR)/lib
+export INCLUDEDIR?=$(BUILDDIR)/include
+export KERNEL?=$(BUILDDIR)/SmplOS.kernel
+export ISO?=$(BUILDDIR)/SmplOS.iso
 
-ISO=SmplOS.iso
+PROJECTS=libc kernel iso
 
-.PHONY: clean install install-libs install-headers iso qemu
+.PHONY: build includes-% build-%
 
-install: install-headers install-libs $(PROJECTS:%=install-%)
+build: includes-kernel $(PROJECTS:%=build-%)
 
-install-libs: $(PROJECTS:%=install-libs-%)
-
-install-headers: $(PROJECTS:%=install-headers-%)
-
-qemu: iso FORCE
+qemu: build
 	qemu-system-$(ARCH) -cdrom $(ISO)
 
-iso: $(ISO)
+includes-%: PROJECT = $(@:includes-%=%)
+includes-%: 
+	$(MAKE) -C $(PROJECT) includes
 
-$(ISO): install grub.cfg
-	mkdir -p $(BOOTDIR)/grub
-	cp grub.cfg $(BOOTDIR)/grub
-	grub-mkrescue -o $(ISO) $(SYSROOT)
-
-
-clean: $(PROJECTS:%=clean-%)
-	rm -fr $(SYSROOT)
-	rm -f $(ISO)
-
-PROJECT_MAKE_TARGETS=clean install install-headers install-libs
-define PROJECT_MAKE_RULE
-.PHONY: $(MAKE_TARGET)-$(PROJECT)
-$(MAKE_TARGET)-$(PROJECT):
-	$(MAKE) -C $(PROJECT) $(MAKE_TARGET)
-endef
-define PROJECT_RULES
-.PHONY: $(PROJECT)
-
-$(PROJECT):
+build-%: PROJECT = $(@:build-%=%)
+build-%:
 	$(MAKE) -C $(PROJECT)
-
-$(foreach MAKE_TARGET,$(PROJECT_MAKE_TARGETS),$(eval $(call PROJECT_MAKE_RULE)))
-endef
-$(foreach PROJECT,$(PROJECTS),$(eval $(call PROJECT_RULES)))
-
-FORCE:

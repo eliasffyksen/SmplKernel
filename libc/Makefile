@@ -1,7 +1,10 @@
 
 SRCS=$(wildcard libc/**/*.c) $(wildcard libc/**/*.S)
+
 OBJS=$(SRCS:.c=.o)
 OBJS:=$(OBJS:.S=.o)
+OBJS:=$(OBJS:%=$(BUILDDIR)/%)
+
 HEADERS=$(shell find include -name "*.h")
 HEADERS:=$(HEADERS:include/%=%)
 
@@ -10,33 +13,29 @@ LIBC_OBJS=$(filter-out %.libk.o,$(OBJS))
 
 CFLAGS+=-I$(INCLUDEDIR) -nostdlib -ffreestanding
 
-install: install-headers install-libs 
+.PHONE: build includes build-libc build-libk
 
-clean:
-	rm -f libc.a libk.a
-	rm -f $(OBJS)
+build: includes build-libc build-libk
 
-install-headers: $(HEADERS:%=$(INCLUDEDIR)/%)
-$(INCLUDEDIR)/%.h: %.h
-	mkdir -p $(INCLUDEDIR)
-	cp -R --preserve=timestamps include/. $(INCLUDEDIR)/.
+includes: $(HEADERS:%=$(INCLUDEDIR)/%)
+$(INCLUDEDIR)/%.h: include/%.h
+	mkdir -p $(shell dirname $@)
+	cp -R --preserve=timestamps $< $@
 
-install-libs: $(LIBDIR)/libk.a $(LIBDIR)/libc.a 
-
-libk.a: $(LIBK_OBJS)
+build-libk: $(LIBDIR)/libk.a
+$(LIBDIR)/libk.a: $(LIBK_OBJS)
+	mkdir -p $(shell dirname $@)
 	$(AR) rcs $@ $^
 
-libc.a: $(LIBC_OBJS)
+build-libc: $(LIBDIR)/libc.a
+$(LIBDIR)/libc.a: $(LIBC_OBJS)
+	mkdir -p $(shell dirname $@)
 	$(AR) rcs $@ $^
 
-$(LIBDIR)/lib%: lib%
-	mkdir -p $(LIBDIR)
-	cp $< $(LIBDIR)
-
-.c.o:
+$(BUILDDIR)/%.o: %.c
+	mkdir -p $(shell dirname $@)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-.S.o:
+$(BUILDDIR)/%.o: %.S
+	mkdir -p $(shell dirname $@)
 	$(CC) $(CFLAGS) -c -o $@ $<
-
-

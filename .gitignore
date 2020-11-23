@@ -1,6 +1,5 @@
 *.iso
-isodir
-sysroot
 **/*.o
 **/*.a
+build
 .vscode

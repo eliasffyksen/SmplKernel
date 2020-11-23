@@ -5,38 +5,32 @@ SRCS=$(shell find kernel $(ARCHDIR) \( -name "*.c" -o -name "*.S" \))
 
 OBJS=$(SRCS:.c=.o)
 OBJS:=$(OBJS:.S=.o)
+OBJS:=$(OBJS:%=$(BUILDDIR)/%)
+
 HEADERS=$(shell find include -name "*.h")
 HEADERS:=$(HEADERS:include/%=%)
 
 CFLAGS+=-I$(INCLUDEDIR) -ffreestanding -nostdlib
 LIBS=-L$(LIBDIR) -lk
 
-all: SmplOS.kernel
+.PHONY: build
 
-SmplOS.kernel: $(OBJS) $(ARCHDIR)/linker.ld $(LIBDIR)/libk.a
+build: $(KERNEL)
+
+$(KERNEL): $(OBJS) $(ARCHDIR)/linker.ld $(LIBDIR)/libk.a
 	$(CC) $(CFLAGS) -T $(ARCHDIR)/linker.ld -o $@ $(OBJS) $(LIBS)
 	grub-file --is-x86-multiboot $@
 
-install: install-headers install-libs install-kernel
+includes: $(HEADERS:%=$(INCLUDEDIR)/%)
+$(INCLUDEDIR)/%.h: include/%.h
+	mkdir -p $(shell dirname $@)
+	cp -R --preserve=timestamps $< $@
 
-install-libs:
-
-install-headers: $(HEADERS:%=$(INCLUDEDIR)/%)
-$(INCLUDEDIR)/%.h: %.h
-	mkdir -p $(INCLUDEDIR)
-	cp -R --preserve=timestamps include/. $(INCLUDEDIR)/.
-
-install-kernel: $(BOOTDIR)/SmplOS.kernel
-$(BOOTDIR)/SmplOS.kernel: SmplOS.kernel
-	mkdir -p $(BOOTDIR)
-	cp SmplOS.kernel $(BOOTDIR)
-
-clean:
-	rm -f $(OBJS)
-	rm -f SmplOS.kernel
-
-%.o: %.S
+$(BUILDDIR)/%.o: %.c
+	mkdir -p $(shell dirname $@)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-%.o: %.c
+$(BUILDDIR)/%.o: %.S
+	mkdir -p $(shell dirname $@)
 	$(CC) $(CFLAGS) -c -o $@ $<
+
