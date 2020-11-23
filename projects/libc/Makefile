@@ -8,7 +8,7 @@ LIBC_OBJS=$(filter-out %.libk.o,$(OBJS))
 
 CFLAGS+=-I$(INCLUDEDIR) -nostdlib -ffreestanding
 
-install: install-headers install-libk.a install-libc.a 
+install: install-headers install-libs 
 
 clean:
 	rm -f libc.a libk.a
@@ -17,6 +17,8 @@ clean:
 install-headers:
 	mkdir -p $(INCLUDEDIR)
 	cp -R --preserve=timestamps include/. $(INCLUDEDIR)/.
+
+install-libs: install-libk.a install-libc.a 
 
 libk.a: $(LIBK_OBJS)
 	$(AR) rcs $@ $^

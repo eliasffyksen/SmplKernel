@@ -9,20 +9,15 @@ OBJS:=$(OBJS:.S=.o)
 CFLAGS+=-I$(INCLUDEDIR) -ffreestanding -nostdlib
 LIBS=-L$(LIBDIR) -lk
 
-lssrc:
-	echo $(SRCS)
+all: SmplOS.kernel
 
 SmplOS.kernel: $(OBJS) $(ARCHDIR)/linker.ld $(LIBDIR)/libk.a
 	$(CC) $(CFLAGS) -T $(ARCHDIR)/linker.ld -o $@ $(OBJS) $(LIBS)
 	grub-file --is-x86-multiboot $@
 
-%.o: %.S
-	$(CC) $(CFLAGS) -c -o $@ $<
+install: install-headers install-libs install-kernel
 
-%.o: %.c
-	$(CC) $(CFLAGS) -c -o $@ $<
-
-install: install-headers install-kernel
+install-libs:
 
 install-headers:
 	mkdir -p $(INCLUDEDIR)
@@ -34,3 +29,8 @@ install-kernel: SmplOS.kernel
 
 clean:
 	rm -f $(OBJS)
+%.o: %.S
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+%.o: %.c
+	$(CC) $(CFLAGS) -c -o $@ $<
