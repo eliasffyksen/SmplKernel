@@ -5,6 +5,8 @@ SRCS=$(shell find kernel $(ARCHDIR) \( -name "*.c" -o -name "*.S" \))
 
 OBJS=$(SRCS:.c=.o)
 OBJS:=$(OBJS:.S=.o)
+HEADERS=$(shell find include -name "*.h")
+HEADERS:=$(HEADERS:include/%=%)
 
 CFLAGS+=-I$(INCLUDEDIR) -ffreestanding -nostdlib
 LIBS=-L$(LIBDIR) -lk
@@ -19,11 +21,13 @@ install: install-headers install-libs install-kernel
 
 install-libs:
 
-install-headers:
+install-headers: $(HEADERS:%=$(INCLUDEDIR)/%)
+$(INCLUDEDIR)/%.h: %.h
 	mkdir -p $(INCLUDEDIR)
 	cp -R --preserve=timestamps include/. $(INCLUDEDIR)/.
 
-install-kernel: SmplOS.kernel
+install-kernel: $(BOOTDIR)/SmplOS.kernel
+$(BOOTDIR)/SmplOS.kernel: SmplOS.kernel
 	mkdir -p $(BOOTDIR)
 	cp SmplOS.kernel $(BOOTDIR)
 
