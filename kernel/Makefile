@@ -29,6 +29,8 @@ install-kernel: SmplOS.kernel
 
 clean:
 	rm -f $(OBJS)
+	rm -f SmplOS.kernel
+
 %.o: %.S
 	$(CC) $(CFLAGS) -c -o $@ $<
 

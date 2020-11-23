@@ -2,6 +2,8 @@ export TARGET=i686-elf
 export ARCH=i386
 export CC=clang --target=i686-pc-elf -march=i686 -fno-builtin
 export AR=llvm-ar
+export CC=i686-elf-gcc
+export AR=i686-elf-ar
 
 export SYSROOT=$(CURDIR)/sysroot
 export PREFIX=$(SYSROOT)/usr
@@ -11,8 +13,7 @@ export INCLUDEDIR=$(PREFIX)/include
 
 export CFLAGS=-O2 -Wall -Wextra
 
-PROJECTS=$(wildcard projects/*)
-PROJECTS:=$(PROJECTS:projects/%=%)
+PROJECTS=libc kernel
 
 ISO=SmplOS.iso
 
@@ -37,18 +38,19 @@ $(ISO): install grub.cfg
 
 clean: $(PROJECTS:%=clean-%)
 	rm -fr $(SYSROOT)
+	rm -f $(ISO)
 
 PROJECT_MAKE_TARGETS=clean install install-headers install-libs
 define PROJECT_MAKE_RULE
 .PHONY: $(MAKE_TARGET)-$(PROJECT)
 $(MAKE_TARGET)-$(PROJECT):
-	$(MAKE) -C projects/$(PROJECT) $(MAKE_TARGET)
+	$(MAKE) -C $(PROJECT) $(MAKE_TARGET)
 endef
 define PROJECT_RULES
 .PHONY: $(PROJECT)
 
 $(PROJECT):
-	$(MAKE) -C projects/$(PROJECT)
+	$(MAKE) -C $(PROJECT)
 
 $(foreach MAKE_TARGET,$(PROJECT_MAKE_TARGETS),$(eval $(call PROJECT_MAKE_RULE)))
 endef
