@@ -4,7 +4,7 @@ SECTIONS
 {
 	. = 1M;
 
-	.tect BLOCK(4K) : ALIGN(4K)
+	.text BLOCK(4K) : ALIGN(4K)
 	{
 		*(.multiboot)
 		*(.text)
@@ -20,7 +20,7 @@ SECTIONS
 		*(.data)
 	}
 
-	bss BLOCK(4K) : ALIGN(4K)
+	.bss BLOCK(4K) : ALIGN(4K)
 	{
 		*(COMMON)
 		*(.bss)
