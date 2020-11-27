@@ -6,13 +6,13 @@ HEADERS=$(shell \
 	-path $(INCLUDEDIR)/kernel -prune -false -o \
 	-name "*.h" \
 )
-HEADERS:=$(HEADERS:$(INCLUDEDIR)/%=$(ISODIR)/include/%)
+HEADERS:=$(HEADERS:$(INCLUDEDIR)/%=$(ISODIR)/usr/include/%)
 
 LIBS=$(shell \
 	find $(LIBDIR) \
 	-name "lib*.a" -not -name libk.a \
 )
-LIBS:=$(LIBS:$(LIBDIR)/%=$(ISODIR)/lib/%)
+LIBS:=$(LIBS:$(LIBDIR)/%=$(ISODIR)/usr/lib/%)
 
 FILES=\
 	$(LIBS) \
@@ -31,12 +31,12 @@ clean:
 $(ISO): $(ISODIR)
 	grub-mkrescue -o $@ $<
 
-$(ISODIR)/lib/%: $(LIBDIR)/%
+$(ISODIR)/usr/lib/%: $(LIBDIR)/%
 	mkdir -p $(shell dirname $@)
 	cp --preserve=timestamps  $< $@
 	touch $(ISODIR)
 
-$(ISODIR)/include/%: $(INCLUDEDIR)/%
+$(ISODIR)/usr/include/%: $(INCLUDEDIR)/%
 	mkdir -p $(shell dirname $@)
 	cp --preserve=timestamps  $< $@
 	touch $(ISODIR)

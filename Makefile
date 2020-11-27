@@ -4,14 +4,16 @@ export BUILDDIR?=$(SRCDIR)/build
 export TARGET?=i686-elf
 export ARCH?=i386
 
+export BINUTILS=$(shell dirname `which $(TARGET)-gcc`)
 export CC=clang --target=i686-pc-elf -march=i686 -fno-builtin
-export CFLAGS=-O2 -Wall -Wextra
 export AR=llvm-ar
 
 export LIBDIR?=$(BUILDDIR)/lib
 export INCLUDEDIR?=$(BUILDDIR)/include
 export KERNEL?=$(BUILDDIR)/SmplOS.kernel
 export ISO?=$(BUILDDIR)/SmplOS.iso
+
+export CFLAGS=-O2 -Wall -Wextra -B$(BINUTILS)
 
 PROJECTS=libc kernel iso
 
