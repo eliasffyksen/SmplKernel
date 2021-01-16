@@ -3,7 +3,7 @@
 #include <kernel/tty.h>
 #include <kernel/arch.h>
 
-void kernel_main() 
+void kernel_main(void)
 {
 	terminal_init();
 	puts("Terminal initialized");

@@ -18,7 +18,7 @@ static uint16_t* terminal_buffer;
 
 static size_t terminal_tabsize;
 
-void terminal_init()
+void terminal_init(void)
 {
 	terminal_row = 0;
 	terminal_column = 0;
@@ -45,7 +45,7 @@ void terminal_putentryat(unsigned char c, uint8_t color, size_t x, size_t y)
 	terminal_buffer[index] = vga_entry(c, color);
 }
 
-void terminal_newline()
+void terminal_newline(void)
 {	
 	terminal_column = 0;
 	if (++terminal_row == VGA_HEIGHT)
